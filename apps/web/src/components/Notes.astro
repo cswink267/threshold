@@ -1,0 +1,76 @@
+---
+/*
+  Rendered on demand as a server island: the page around it stays static and
+  cacheable, while this part reads live data from the API on every visit.
+*/
+import { api } from '../lib/api';
+
+interface Entry {
+  id: string;
+  title: string;
+  body: string;
+  created_at: string;
+}
+
+let entries: Entry[] | null;
+try {
+  entries = await api<Entry[]>('/entries');
+} catch {
+  entries = null;
+}
+
+const date = new Intl.DateTimeFormat('en', { day: 'numeric', month: 'long', year: 'numeric' });
+---
+
+{
+  entries === null ? (
+    <p class="state">The API isn't answering. Start everything with <code>docker compose up</code>, then reload.</p>
+  ) : entries.length === 0 ? (
+    <p class="state">No notes yet. Add the first one with <code>POST /entries</code> in the API docs.</p>
+  ) : (
+    <ol class="notes">
+      {entries.slice(0, 5).map((entry) => (
+        <li>
+          <time datetime={entry.created_at}>{date.format(new Date(entry.created_at))}</time>
+          <h3>{entry.title}</h3>
+          {entry.body && <p>{entry.body}</p>}
+        </li>
+      ))}
+    </ol>
+  )
+}
+
+<style>
+  .notes {
+    display: grid;
+    gap: 1.75rem;
+    margin-top: 2rem;
+    padding: 0;
+    list-style: none;
+  }
+
+  li {
+    padding-left: 1.25rem;
+    border-left: 1px solid var(--line);
+  }
+
+  time {
+    font-family: var(--font-guide);
+    font-size: var(--text-sm);
+    color: var(--ink-soft);
+  }
+
+  h3 {
+    margin-top: 0.2rem;
+    color: var(--ink);
+    font-size: 1.5rem;
+  }
+
+  p {
+    margin-top: 0.35rem;
+  }
+
+  .state {
+    margin-top: 2rem;
+  }
+</style>

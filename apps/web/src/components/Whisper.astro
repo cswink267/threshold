@@ -1,0 +1,59 @@
+---
+/*
+  A whisper: something that only shows itself to people who look closer.
+  Hover, focus or tap reveals it, and screen readers read it in place.
+  Use it for delight, never for anything someone needs.
+*/
+interface Props {
+  says: string;
+}
+const { says } = Astro.props;
+---
+
+<span class="whisper" tabindex="0"><slot /><span class="aside">{says}</span></span>
+
+<style>
+  .whisper {
+    position: relative;
+    color: var(--ink);
+    text-decoration: underline dotted color-mix(in srgb, var(--accent) 70%, transparent);
+    text-underline-offset: 0.25em;
+    cursor: help;
+  }
+
+  .aside {
+    position: absolute;
+    z-index: 2;
+    left: 0;
+    bottom: calc(100% + 0.6rem);
+    width: max-content;
+    max-width: min(18rem, 75vw);
+    padding: 0.7rem 0.9rem;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: color-mix(in srgb, var(--bg-deep) 94%, transparent);
+    color: var(--ink);
+    font-family: var(--font-guide);
+    font-size: var(--text-sm);
+    line-height: 1.45;
+    opacity: 0;
+    transform: translateY(0.35rem);
+    transition:
+      opacity 0.45s var(--ease-settle),
+      transform 0.45s var(--ease-settle);
+    pointer-events: none;
+  }
+
+  .whisper:hover .aside,
+  .whisper:focus .aside {
+    opacity: 1;
+    transform: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .aside {
+      transition: none;
+      transform: none;
+    }
+  }
+</style>

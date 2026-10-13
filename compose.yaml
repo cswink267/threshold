@@ -1,0 +1,72 @@
+name: threshold
+
+services:
+  db:
+    image: pgvector/pgvector:pg17
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-threshold}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-threshold}
+      POSTGRES_DB: ${POSTGRES_DB:-threshold}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  redis:
+    image: redis:8-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "6379:6379"
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  api:
+    build: ./apps/api
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-threshold}:${POSTGRES_PASSWORD:-threshold}@db:5432/${POSTGRES_DB:-threshold}
+      REDIS_URL: redis://redis:6379/0
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./apps/api/app:/app/app
+      - ./apps/api/migrations:/app/migrations
+    command: sh -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
+
+  web:
+    build:
+      context: ./apps/web
+      target: dev
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      API_URL: http://api:8000
+    ports:
+      - "4321:4321"
+    depends_on:
+      - api
+    volumes:
+      - ./apps/web/src:/app/src
+      - ./apps/web/public:/app/public
+
+volumes:
+  pgdata:
+  redisdata:

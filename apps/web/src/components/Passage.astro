@@ -1,0 +1,38 @@
+---
+/*
+  A passage: one stretch of the way in. On wide screens each passage steps a
+  little further in (`step`), and it brightens as the visitor reaches it (data-lit).
+*/
+interface Props {
+  title: string;
+  id?: string;
+  step?: number;
+}
+const { title, id, step = 0 } = Astro.props;
+---
+
+<section class="passage" id={id} style={`--step: ${step}`} data-lit>
+  <h2>{title}</h2>
+  <div class="body"><slot /></div>
+</section>
+
+<style>
+  .passage {
+    padding-block: 14vh;
+    padding-inline: calc(var(--gutter) + var(--step, 0) * var(--stride)) var(--gutter);
+  }
+
+  h2 {
+    max-width: 16ch;
+    font-size: var(--text-heading);
+  }
+
+  .body {
+    max-width: var(--measure);
+    margin-top: 1.25rem;
+    color: var(--ink-soft);
+  }
+  .body :global(p + p) {
+    margin-top: 1em;
+  }
+</style>

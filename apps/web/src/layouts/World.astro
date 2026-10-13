@@ -1,0 +1,45 @@
+---
+import '@fontsource-variable/alegreya';
+import '@fontsource-variable/alegreya/wght-italic.css';
+import '@fontsource/alegreya-sans/400.css';
+import '@fontsource/alegreya-sans/500.css';
+import '../styles/world.css';
+import '../styles/base.css';
+import Atmosphere from '../components/Atmosphere.astro';
+import Crest from '../components/Crest.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  /** Keep in step with --bg in world.css. */
+  themeColor?: string;
+}
+const { title, description, themeColor = '#10142a' } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content={themeColor} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <script is:inline>
+      document.documentElement.classList.add('js');
+    </script>
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    <Atmosphere />
+    <Crest><slot name="nav" /></Crest>
+    <main id="main"><slot /></main>
+    <footer class="colophon">
+      <slot name="footer">Threshold, the starter for every world. Astro and FastAPI on Postgres and Redis.</slot>
+    </footer>
+    <script>
+      import '../scripts/immersion';
+    </script>
+  </body>
+</html>

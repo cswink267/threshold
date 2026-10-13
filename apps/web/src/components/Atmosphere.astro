@@ -1,0 +1,107 @@
+---
+/*
+  The atmosphere. Decorative, fixed behind everything, and never carries content.
+    .near   the warm light behind the visitor; it falls away as they go deeper
+    .far    the colder light ahead; it rises as they go deeper
+    .lumen  the light at the visitor's hand (moved by immersion.ts)
+    .grain and .vignette give the dark texture and edges
+  The thread on the left fills as the visitor goes further in.
+  `--deep` (0 at the top of the page, 1 at the bottom) is set on <html> by immersion.ts.
+*/
+---
+
+<div class="atmosphere" aria-hidden="true">
+  <div class="near"></div>
+  <div class="far"></div>
+  <div class="lumen"></div>
+  <div class="grain"></div>
+  <div class="vignette"></div>
+</div>
+<div class="thread" aria-hidden="true"></div>
+
+<style>
+  .atmosphere {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+    background: var(--bg);
+  }
+  .atmosphere > div {
+    position: absolute;
+  }
+
+  .near {
+    inset: -20%;
+    background: radial-gradient(38% 34% at 74% 24%, var(--glow-near), transparent 72%);
+    opacity: calc(1 - var(--deep, 0) * 0.75);
+    transform: translate3d(0, calc(var(--deep, 0) * -18vh), 0);
+  }
+
+  /* Taller than the view so its lower edge never shows as it rises. */
+  .far {
+    inset: -20% -20% -55%;
+    background: radial-gradient(52% 32% at 28% 64%, var(--glow-far), transparent 72%);
+    opacity: calc(0.45 + var(--deep, 0) * 0.55);
+    transform: translate3d(0, calc(var(--deep, 0) * -30vh), 0);
+  }
+
+  .lumen {
+    left: 0;
+    top: 0;
+    width: var(--lumen-size);
+    height: var(--lumen-size);
+    background: radial-gradient(closest-side, var(--lumen), transparent);
+    transform: translate3d(62vw, 38vh, 0) translate(-50%, -50%);
+    will-change: transform;
+  }
+
+  .grain {
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.6 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 240px;
+    opacity: var(--grain);
+  }
+
+  .vignette {
+    inset: 0;
+    background: radial-gradient(130% 95% at 50% 40%, transparent 50%, var(--bg-deep) 100%);
+    opacity: var(--vignette);
+  }
+
+  .thread {
+    position: fixed;
+    z-index: 1;
+    left: calc(var(--gutter) * 0.45);
+    top: 24vh;
+    bottom: 24vh;
+    width: 1px;
+    background: var(--line);
+    pointer-events: none;
+  }
+  .thread::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(var(--accent), var(--cold));
+    transform-origin: top;
+    transform: scaleY(var(--deep, 0));
+  }
+
+  /* Arrival: the dark comes first, then the light. */
+  :global(.js) .atmosphere {
+    animation: kindle calc(2.4s * var(--tempo)) var(--ease-settle) both;
+  }
+  @keyframes kindle {
+    from {
+      opacity: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :global(.js) .atmosphere {
+      animation: none;
+    }
+  }
+</style>

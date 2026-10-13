@@ -1,0 +1,77 @@
+---
+import { PUBLIC_API_URL } from 'astro:env/client';
+import Notes from '../components/Notes.astro';
+import Passage from '../components/Passage.astro';
+import Threshold from '../components/Threshold.astro';
+import Whisper from '../components/Whisper.astro';
+import World from '../layouts/World.astro';
+
+const apiDocs = new URL('/docs', PUBLIC_API_URL).href;
+---
+
+<World
+  title="Threshold"
+  description="The starter every project begins from: Astro and FastAPI on Postgres and Redis, with a layer that turns pages into places."
+>
+  <Fragment slot="nav">
+    <a href="#arrive">The canon</a>
+    <a href="#notes">Notes</a>
+    <a class="button button--quiet" href={apiDocs}>API docs</a>
+  </Fragment>
+
+  <Threshold next="#arrive">
+    <Fragment slot="title">Every project is its own world</Fragment>
+    <p slot="lede">
+      This is where each one starts: Astro and FastAPI on Postgres and Redis, with a layer on top that turns pages into places.
+    </p>
+    <Fragment slot="actions">
+      <a class="button button--light" href="#arrive">Go further in</a>
+      <a class="button button--quiet" href={apiDocs}>Open the API docs</a>
+    </Fragment>
+  </Threshold>
+
+  <Passage id="arrive" title="Arrive somewhere">
+    <p>
+      The first seconds set the mood before anything asks for attention. Here the dark comes first, then the light, then the way in. It's the only moment on the page that plays by itself.
+    </p>
+  </Passage>
+
+  <Passage step={1} title="Bring your own light">
+    <p>
+      Light follows your hand, and whatever you're looking at comes out of the dark. After the arrival, motion only ever answers you.
+    </p>
+  </Passage>
+
+  <Passage step={2} title="Go deeper">
+    <p>
+      As you scroll, the warm light falls behind and a colder one rises ahead. The line on the left shows how far in you are.
+    </p>
+  </Passage>
+
+  <Passage step={3} title="Follow your curiosity">
+    <p>
+      Each passage leads to the next, and some things only show themselves to people who <Whisper says="Like this. Keep secrets for delight, never for anything someone needs.">look closer</Whisper>.
+    </p>
+  </Passage>
+
+  <Passage step={4} title="Every world is different">
+    <p>
+      This one is Vesper: midnight and lamplight. An album, a tool and a store would each get a world built from what they're about, with the same grammar underneath. Describe yours in <code>WORLD.md</code>, then re-skin <code>world.css</code>.
+    </p>
+  </Passage>
+
+  <Passage step={5} title="Keep the path visible">
+    <p>
+      The spell never hides the way. Navigation, the main action and prices stay in reach, text stays readable, sound waits to be invited, and reduced motion gets a still version that's just as considered.
+    </p>
+  </Passage>
+
+  <Passage id="notes" title="Notes from the API">
+    <p>
+      Read from Postgres through FastAPI, cached in Redis, and rendered on the server while the rest of this page stays static.
+    </p>
+    <Notes server:defer>
+      <p slot="fallback" class="state">Asking the API…</p>
+    </Notes>
+  </Passage>
+</World>

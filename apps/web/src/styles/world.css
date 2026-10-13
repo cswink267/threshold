@@ -1,0 +1,49 @@
+/*
+  world.css: the world this project lives in.
+
+  Every project gets its own world, built from what the project is about
+  (describe it in WORLD.md first). Re-skin these tokens and the whole site
+  follows: components only ever read tokens, never raw values.
+
+  Default world, Vesper: midnight and lamplight. The visitor carries the
+  light, and the world comes out of the dark wherever it falls.
+*/
+
+:root {
+  color-scheme: dark;
+
+  /* Light and dark */
+  --bg: #10142a; /* midnight. Keep World.astro's theme-color in step with it */
+  --bg-deep: #060816; /* the dark at the edges */
+  --line: #2a315a; /* hairlines and quiet borders */
+
+  /* Ink */
+  --ink: #ede5d3; /* vellum: headings and primary text */
+  --ink-soft: #aaa6bf; /* dusk: reading text and secondary text */
+  --ink-dim: #7c7996; /* large type away from the light; never body copy */
+  --ink-lit: #fff4de; /* type where the light falls */
+
+  /* The light the visitor carries. Spend it sparingly: the main action, focus, the light itself. */
+  --accent: #f3c27a;
+  --accent-ink: #1d1508; /* text on the accent */
+  --cold: #7f8fe8; /* the colder light further in; glows and the depth line, never text */
+
+  /* Atmosphere */
+  --glow-near: rgb(243 194 122 / 0.17); /* the warm light behind you */
+  --glow-far: rgb(115 133 230 / 0.22); /* the colder light ahead */
+  --lumen: rgb(243 194 122 / 0.13); /* the light at the visitor's hand */
+  --lumen-size: 34rem;
+  --grain: 0.05;
+  --vignette: 0.8;
+
+  /* Type */
+  --font-tale: 'Alegreya Variable', 'Alegreya', Georgia, serif; /* headings and reading */
+  --font-guide: 'Alegreya Sans', 'Gill Sans', system-ui, sans-serif; /* navigation, buttons, small print */
+
+  /* Tempo multiplies every duration: above 1 is slower and heavier, below 1 quicker and tenser. */
+  --tempo: 1;
+  --ease-settle: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* How far each passage steps further in on wide screens */
+  --stride: clamp(0rem, 4.5vw - 1.5rem, 4.25rem);
+}

@@ -1,0 +1,207 @@
+/*
+  base.css: the shared grammar. Tokens live in world.css; nothing here should
+  need to change when a project gets a new world. Layered, so any unlayered
+  style (including component styles) wins without a specificity fight.
+*/
+
+@layer reset, base;
+
+@layer reset {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+  * {
+    margin: 0;
+  }
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+  img,
+  picture,
+  svg,
+  video,
+  canvas {
+    display: block;
+    max-width: 100%;
+  }
+  input,
+  button,
+  textarea,
+  select {
+    font: inherit;
+    color: inherit;
+  }
+}
+
+@layer base {
+  :root {
+    --text-sm: 0.875rem;
+    --text-base: 1.125rem;
+    --text-lede: clamp(1.1875rem, 1.1rem + 0.4vw, 1.375rem);
+    --text-heading: clamp(2.125rem, 1.5rem + 2.6vw, 3.5rem);
+    --text-title: clamp(3.25rem, 1.2rem + 8.4vw, 7.75rem);
+    --gutter: max(1.25rem, 5vw);
+    --measure: 36rem;
+  }
+
+  html {
+    background: var(--bg);
+    color: var(--ink);
+    scroll-padding-top: 5rem;
+  }
+
+  body {
+    min-height: 100dvh;
+    font-family: var(--font-tale);
+    font-size: var(--text-base);
+    line-height: 1.62;
+    font-kerning: normal;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: clip;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-weight: 500;
+    line-height: 1.05;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  a {
+    color: inherit;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+    text-decoration-color: color-mix(in srgb, var(--accent) 60%, transparent);
+  }
+  a:hover {
+    color: var(--ink-lit);
+    text-decoration-color: var(--accent);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  ::selection {
+    background: var(--accent);
+    color: var(--accent-ink);
+  }
+
+  code {
+    font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+    font-size: 0.82em;
+    padding: 0.1em 0.35em;
+    border-radius: 4px;
+    background: color-mix(in srgb, var(--ink) 8%, transparent);
+    color: var(--ink);
+  }
+
+  .button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+    padding: 0.75em 1.35em;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    font-family: var(--font-guide);
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.2;
+    text-decoration: none;
+    transition:
+      background-color 0.35s,
+      border-color 0.35s,
+      color 0.35s,
+      box-shadow 0.6s var(--ease-settle);
+  }
+  /* The main action carries the light; it glows brighter as the hand nears it. */
+  .button--light {
+    background: var(--accent);
+    color: var(--accent-ink);
+  }
+  .button--light:hover {
+    color: var(--accent-ink);
+    box-shadow: 0 0 2.75rem 0.35rem var(--glow-near);
+  }
+  .button--quiet {
+    border-color: var(--line);
+    color: var(--ink);
+  }
+  .button--quiet:hover {
+    border-color: color-mix(in srgb, var(--accent) 70%, transparent);
+    color: var(--ink-lit);
+  }
+
+  /* Waiting, empty and error states speak in the world's voice: italic and quiet. */
+  .state {
+    font-style: italic;
+    color: var(--ink-soft);
+  }
+  .state code {
+    font-style: normal;
+  }
+
+  .skip {
+    position: absolute;
+    z-index: 20;
+    left: var(--gutter);
+    top: 0;
+    padding: 0.6rem 1rem;
+    border-radius: 0 0 6px 6px;
+    background: var(--accent);
+    color: var(--accent-ink);
+    font-family: var(--font-guide);
+    transform: translateY(-120%);
+  }
+  .skip:focus {
+    transform: none;
+  }
+
+  .colophon {
+    padding: 4rem var(--gutter) 3.5rem;
+    font-family: var(--font-guide);
+    font-size: var(--text-sm);
+    color: var(--ink-soft);
+  }
+}
+
+/* Between pages the scene dissolves instead of cutting. Browsers without support simply navigate. */
+@view-transition {
+  navigation: auto;
+}
+::view-transition-old(root) {
+  animation: 420ms cubic-bezier(0.16, 1, 0.3, 1) both dissolve-out;
+}
+::view-transition-new(root) {
+  animation: 720ms cubic-bezier(0.16, 1, 0.3, 1) both dissolve-in;
+}
+@keyframes dissolve-out {
+  to {
+    opacity: 0;
+    filter: blur(4px);
+  }
+}
+@keyframes dissolve-in {
+  from {
+    opacity: 0;
+    filter: blur(4px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}

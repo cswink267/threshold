@@ -1,0 +1,145 @@
+---
+/*
+  The threshold: the one orchestrated moment on a page. The dark comes first,
+  then the light, then the way in. After this, motion only answers the visitor.
+
+  Slots: title (the h1), lede, actions. `next` links the cue to the first passage.
+*/
+interface Props {
+  next?: string;
+  nextLabel?: string;
+}
+const { next, nextLabel = 'Further in' } = Astro.props;
+---
+
+<section class="threshold">
+  <div class="horizon" data-depth="0.4" aria-hidden="true"></div>
+  <div class="inner">
+    <h1 class="title" data-light><slot name="title" /></h1>
+    <div class="lede"><slot name="lede" /></div>
+    <div class="actions"><slot name="actions" /></div>
+  </div>
+  {next && <a class="cue" href={next}>{nextLabel}</a>}
+</section>
+
+<style>
+  .threshold {
+    position: relative;
+    isolation: isolate;
+    overflow-x: clip;
+    min-height: 100svh;
+    display: grid;
+    align-items: center;
+    padding: 7rem var(--gutter) 7rem;
+  }
+
+  /* Somewhere far ahead, a colder light. It drifts slower than everything near. */
+  .horizon {
+    position: absolute;
+    z-index: -1;
+    right: -14vw;
+    bottom: -18vh;
+    width: min(80vmin, 52rem);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, color-mix(in srgb, var(--cold) 30%, transparent), transparent);
+    pointer-events: none;
+  }
+
+  .inner {
+    max-width: 64rem;
+  }
+
+  /* The title is lit by the visitor's light: brightest where it falls, dimmer away from it. */
+  .title {
+    max-width: 11ch;
+    font-size: var(--text-title);
+    line-height: 0.98;
+    letter-spacing: -0.015em;
+    color: var(--ink);
+    background: radial-gradient(
+      circle var(--lumen-size) at var(--lx, 70%) var(--ly, 20%),
+      var(--ink-lit),
+      var(--ink) 34%,
+      var(--ink-dim) 82%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .lede {
+    max-width: 34rem;
+    margin-top: 1.75rem;
+    font-size: var(--text-lede);
+    color: var(--ink-soft);
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 1rem;
+    margin-top: 2.25rem;
+  }
+
+  .cue {
+    position: absolute;
+    left: var(--gutter);
+    bottom: 2.25rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.85rem;
+    color: var(--ink-soft);
+    font-family: var(--font-guide);
+    font-size: var(--text-sm);
+    text-decoration: none;
+  }
+  .cue::before {
+    content: '';
+    width: 2.5rem;
+    height: 1px;
+    background: currentColor;
+    opacity: 0.6;
+  }
+
+  /* Arrival */
+  :global(.js) .title {
+    animation: emerge calc(2s * var(--tempo)) calc(0.35s * var(--tempo)) var(--ease-settle) both;
+  }
+  :global(.js) .lede {
+    animation: appear calc(1.2s * var(--tempo)) calc(1.25s * var(--tempo)) var(--ease-settle) both;
+  }
+  :global(.js) .actions {
+    animation: appear calc(1.2s * var(--tempo)) calc(1.5s * var(--tempo)) var(--ease-settle) both;
+  }
+  :global(.js) .cue {
+    animation: appear calc(1.4s * var(--tempo)) calc(2.1s * var(--tempo)) var(--ease-settle) both;
+  }
+  @keyframes emerge {
+    from {
+      opacity: 0;
+      filter: blur(12px);
+    }
+  }
+  @keyframes appear {
+    from {
+      opacity: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :global(.js) .title,
+    :global(.js) .lede,
+    :global(.js) .actions,
+    :global(.js) .cue {
+      animation: none;
+    }
+  }
+
+  @media (forced-colors: active) {
+    .title {
+      background: none;
+      -webkit-text-fill-color: currentColor;
+    }
+  }
+</style>
